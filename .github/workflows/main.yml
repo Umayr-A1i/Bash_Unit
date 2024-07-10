@@ -16,3 +16,44 @@ jobs:
     - name: Run Bash script tests
       run: |
         chmod +x ./my_script.sh && ./my_script.sh
+name: Test and Deploy Bash Script
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Run Bash script tests
+      run: |
+        # Assuming your script is named script.sh and located in the root directory
+        chmod +x ./script.sh
+        ./script.sh --test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Copy files to VM
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "."
+        target: "/home/ec2_user"
+
+    - name: Run script on remote server
+      run: |
+        ssh -o StrictHostKeyChecking=no user@remote-server 'bash /home/ec2_user/my_script.sh'
