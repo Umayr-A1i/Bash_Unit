@@ -1,21 +1,4 @@
-name: Test and Deploy Bash Script
 
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Run Bash script tests
-      run: |
-        chmod +x ./my_script.sh && ./my_script.sh
 name: Test and Deploy Bash Script
 
 on:
@@ -34,8 +17,8 @@ jobs:
     - name: Run Bash script tests
       run: |
         # Assuming your script is named script.sh and located in the root directory
-        chmod +x ./script.sh
-        ./script.sh --test
+        chmod +x ./my_script.sh
+        ./my_script.sh --test
 
   deploy:
     runs-on: ubuntu-latest
