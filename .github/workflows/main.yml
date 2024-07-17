@@ -15,8 +15,7 @@ jobs:
 
     - name: Run Bash script tests
       run: |
-        chmod +x ./my_script.sh
-        ./my_script.sh
+        chmod +x ./my_script.sh &&  ./my_script.sh
 
   deploy:
     runs-on: ubuntu-latest
@@ -26,27 +25,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup SSH key
+    - name: Debug SSH connection
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
         chmod 600 private_key
-
-    - name: Debug SSH connection
-      run: |
         ssh -i private_key -o StrictHostKeyChecking=no -p ${{ secrets.PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "echo 'SSH Connection Successful'"
 
     - name: Copy files to VM
       run: |
-        scp -i private_key -o StrictHostKeyChecking=no -P ${{ secrets.PORT }} my_script.sh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USERNAME }}/my_script.sh
-
-    - name: Make remote script executable
-      run: |
-        ssh -i private_key -o StrictHostKeyChecking=no -p ${{ secrets.PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} 'chmod +x /home/${{ secrets.SSH_USERNAME }}/my_script.sh'
+        scp -i private_key -o StrictHostKeyChecking=no -P ${{ secrets.PORT }} my_script.sh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/ec2-user
 
     - name: Run script on remote server
       run: |
-        ssh -i private_key -o StrictHostKeyChecking=no -p ${{ secrets.PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} 'sh /home/${{ secrets.SSH_USERNAME }}/my_script.sh'
-
-    - name: Cleanup
-      run: |
-        rm private_key
+        ssh -i private_key -o StrictHostKeyChecking=no -p ${{ secrets.PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} 'sh /ec2-user/my_script.sh'
