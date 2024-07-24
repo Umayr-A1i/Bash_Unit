@@ -2,7 +2,7 @@
 
 # Set the threshold for disk usage alert
 THRESHOLD=80
-LOGFILE="/path/to/notes/file.log"
+LOGFILE="./file.log"
 
 # Function to check disk usage and log a summary
 check_disk_usage() {
